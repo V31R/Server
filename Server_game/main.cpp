@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 int main()
 {
