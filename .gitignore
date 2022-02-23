@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 .vs
+Debug
 Server_game/x64
 *.idb
 *.pdb
