@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
-
+.vs
+Server_game/x64
+*.idb
+*.pdb
 Server_game.vcxproj
 Server_game.vcxproj.filters
 Server_game.vcxproj.user
@@ -28,7 +31,7 @@ Server_game.vcxproj.user
 *.la
 *.a
 *.lib
-
+*.sln
 # Executables
 *.exe
 *.out
