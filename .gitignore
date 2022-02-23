@@ -3,6 +3,7 @@
 .vs
 Debug
 x64
+x64/Debug
 *.sln
 Server_game/x64
 *.vcxproj
