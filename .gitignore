@@ -1,12 +1,16 @@
 # Prerequisites
 *.d
 .vs
+Debug
 x64
+x64/Debug
+Server_game/Debug
 *.sln
 Server_game/x64
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+
 # Compiled Object files
 *.slo
 *.lo
@@ -31,7 +35,7 @@ Server_game/x64
 *.la
 *.a
 *.lib
-
+*.sln
 # Executables
 *.exe
 *.out

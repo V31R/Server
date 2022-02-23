@@ -1,13 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 #include <iostream>
+#include <math.h>
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "Server!");
-    sf::CircleShape shape(100.f, 6);
+    sf::RenderWindow window(sf::VideoMode(300, 300), "Server!");
+    sf::CircleShape shape(100.f, 4);
     shape.setFillColor(sf::Color::Yellow);
 
+    shape.setPosition(100, 100);
     sf::UdpSocket socket;
 
     if (socket.bind(54000) != sf::Socket::Done)
@@ -35,6 +37,7 @@ int main()
     }
     std::cout << "Received " << received << " bytes from " << sender << " on port " << port << std::endl;
     printf("%s", data);
+
 
     while (window.isOpen())
     {
