@@ -1,6 +1,6 @@
 # Prerequisites
 *.d
-
+.vs
 Server_game.vcxproj
 Server_game.vcxproj.filters
 Server_game.vcxproj.user
