@@ -2,12 +2,13 @@
 *.d
 .vs
 Debug
+x64
+*.sln
 Server_game/x64
-*.idb
-*.pdb
-Server_game.vcxproj
-Server_game.vcxproj.filters
-Server_game.vcxproj.user
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
 # Compiled Object files
 *.slo
 *.lo
