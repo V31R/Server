@@ -4,6 +4,7 @@
 Debug
 x64
 x64/Debug
+Server_game/Debug
 *.sln
 Server_game/x64
 *.vcxproj
