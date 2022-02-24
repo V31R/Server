@@ -26,16 +26,8 @@ int main()
     sf::IpAddress sender;
     unsigned short port;
 
+    sf::Thread thread([&]() {
 
-
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
         if (socket.receive(data, 100, received, sender, port) != sf::Socket::Done)
         {
             // error...
@@ -49,10 +41,21 @@ int main()
         std::cout << "Received " << received << " bytes from " << sender << " on port " << port << std::endl;
         printf("%s \n", data);
 
+        });
+    thread.launch();
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
         window.clear();
         window.draw(shape);
         window.display();
     }
-
+    thread.terminate();
     return 0;
 }
