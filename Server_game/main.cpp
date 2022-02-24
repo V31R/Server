@@ -12,7 +12,7 @@ int main()
     shape.setPosition(100, 100);
     sf::UdpSocket socket;
 
-    if (socket.bind(54000) != sf::Socket::Done)
+    if (socket.bind(9993) != sf::Socket::Done)
     {
         // error...
         shape.setFillColor(sf::Color::Red);
@@ -25,18 +25,7 @@ int main()
     std::size_t received;
     sf::IpAddress sender;
     unsigned short port;
-    if (socket.receive(data, 100, received, sender, port) != sf::Socket::Done)
-    {
-        // error...
-        shape.setFillColor(sf::Color::Red);
-    }
-    else {
 
-        shape.setFillColor(sf::Color::Green);
-
-    }
-    std::cout << "Received " << received << " bytes from " << sender << " on port " << port << std::endl;
-    printf("%s", data);
 
 
     while (window.isOpen())
@@ -47,6 +36,18 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+        if (socket.receive(data, 100, received, sender, port) != sf::Socket::Done)
+        {
+            // error...
+            shape.setFillColor(sf::Color::Red);
+        }
+        else {
+
+            shape.setFillColor(sf::Color::Green);
+
+        }
+        std::cout << "Received " << received << " bytes from " << sender << " on port " << port << std::endl;
+        printf("%s \n", data);
 
         window.clear();
         window.draw(shape);
