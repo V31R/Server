@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 #include <iostream>
-#include <cmath>
+#include <ctime>
 
 int main()
 {
@@ -25,7 +25,6 @@ int main()
     std::size_t received;
     sf::IpAddress sender;
     unsigned short port;
-
     sf::Thread thread([&]() {
         while (true){
             if (socket.receive(data, 100, received, sender, port) != sf::Socket::Done)
@@ -39,7 +38,14 @@ int main()
 
             }
         std::cout << "Received " << received << " bytes from " << sender << " on port " << port << std::endl;
-        printf("%s \n", data);
+
+        time_t clientTime;
+        sscanf_s(data, "%lld", &clientTime);
+
+        time_t serverTIme;
+        time(&serverTIme);
+        printf("Send: %lld Recieve: %lld Time: %lld\n",clientTime,serverTIme,serverTIme-clientTime);
+
         }
         });
     thread.launch();
