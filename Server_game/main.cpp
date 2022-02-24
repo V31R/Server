@@ -27,20 +27,20 @@ int main()
     unsigned short port;
 
     sf::Thread thread([&]() {
+        while (true){
+            if (socket.receive(data, 100, received, sender, port) != sf::Socket::Done)
+            {
+                // error...
+                shape.setFillColor(sf::Color::Red);
+            }
+            else {
 
-        if (socket.receive(data, 100, received, sender, port) != sf::Socket::Done)
-        {
-            // error...
-            shape.setFillColor(sf::Color::Red);
-        }
-        else {
+                shape.setFillColor(sf::Color::Green);
 
-            shape.setFillColor(sf::Color::Green);
-
-        }
+            }
         std::cout << "Received " << received << " bytes from " << sender << " on port " << port << std::endl;
         printf("%s \n", data);
-
+        }
         });
     thread.launch();
     while (window.isOpen())
