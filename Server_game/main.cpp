@@ -12,7 +12,7 @@ int main()
     shape.setPosition(100, 100);
     sf::UdpSocket socket;
 
-    if (socket.bind(54000) != sf::Socket::Done)
+    if (socket.bind(9993) != sf::Socket::Done)
     {
         // error...
         shape.setFillColor(sf::Color::Red);
