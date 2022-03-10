@@ -8,7 +8,7 @@
 #include <chrono>
 #include <sstream>
 #include <iostream>
-#include<format>
+#include <format>
 #include <ctime>
 #include <mutex>
 #include <queue>
@@ -22,16 +22,15 @@ public:
 	static Logger& getInstance();
 	void logging();
 	std::string timestamp();
-	void pushMessage(std::string msg, Logger::LogLevel lvl);
+	void pushMessage(const std::string &msg, Logger::LogLevel lvl);
 
-	void warn(std::string message);
-	void error(std::string message);
-	void info(std::string message);
-	void debug(std::string message);
-	void trace(std::string message);
-	void all(std::string message);
+	void warn(const std::string &message);
+	void error(const std::string &message);
+	void info(const std::string &message);
+	void debug(const std::string &message);
+	void trace(const std::string &message);
+	void all(const std::string &message);
 
-	void setLevel(LogLevel level);
 	static std::map <LogLevel, std::string> strLog;
 	
 	class Message {
@@ -41,13 +40,13 @@ public:
 		Logger::LogLevel level_;
 	public:
 		Message() {};
-		Message(std::string msg, Logger::LogLevel lvl);
+		Message(const std::string &msg, Logger::LogLevel lvl);
 
-		void setMsg(std::string msg);
+		void setMsg(const std::string &msg);
 		void setLevel(Logger::LogLevel lvl);
 
-		std::string getMsg();
-		Logger::LogLevel getLevel();
+		std::string getMsg() const; 
+		Logger::LogLevel getLevel() const;
 
 	};
 
@@ -55,9 +54,8 @@ private:
 	std::queue <Message> messageQueue;
 	Logger() {};
 	std::string filename = "Server_game.log";
-    LogLevel level_;
 	static Logger* instance;
-	void log(Message msg);
+	void log(const Message &msg);
 
 protected:
 	std::mutex mutex;

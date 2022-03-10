@@ -27,20 +27,6 @@ Logger& Logger::getInstance() {
 
 }
 
-void Logger::log(Message msg) {
-
-    std::ofstream file(filename, std::fstream::out | std::fstream::app);
-    std::string output;
-    output.append(timestamp());
-    output.append(" [");
-    output.append(strLog.find(msg.getLevel())->second);
-    output.append("] ");
-    output.append(msg.getMsg());
-    output.push_back('\n');
-    file << output;
-    file.close();
-
-}
 
 void Logger::logging()
 {
@@ -86,7 +72,7 @@ std::string Logger::timestamp() {
     
 }
 
-void Logger::pushMessage(std::string msg, Logger::LogLevel lvl){
+void Logger::pushMessage(const std::string &msg, Logger::LogLevel lvl){
 
     mutex.lock();
     messageQueue.push(Message(msg, lvl));
@@ -94,49 +80,59 @@ void Logger::pushMessage(std::string msg, Logger::LogLevel lvl){
 
 }
 
-void Logger::warn(std::string message) {
+void Logger::warn(const std::string &message) {
 
     pushMessage(message, LogLevel::WARN);
 
 }
 
-void Logger::error(std::string message) {
+void Logger::error(const std::string &message) {
 
     pushMessage(message, LogLevel::ERROR);
 
 }
 
-void Logger::info(std::string message) {
+void Logger::info(const std::string &message) {
 
     pushMessage(message, LogLevel::INFO);
 
 }
 
-void Logger::debug(std::string message) {
+void Logger::debug(const std::string &message) {
 
     pushMessage(message, LogLevel::DEBUG);
 
 }
 
-void Logger::trace(std::string message) {
+void Logger::trace(const std::string &message) {
 
     pushMessage(message, LogLevel::TRACE);
 
 }
 
-void Logger::all(std::string message) {
+void Logger::all(const std::string &message) {
 
     pushMessage(message, LogLevel::ALL);
 
 }
 
-void Logger::setLevel(LogLevel level){
+void Logger::log(const Message& msg){
 
-    level_ = level;
+    std::ofstream file(filename, std::fstream::out | std::fstream::app);
+    std::string output;
+    output.append(timestamp());
+    output.append(" [");
+    output.append(strLog.find(msg.getLevel())->second);
+    output.append("] ");
+    output.append(msg.getMsg());
+    output.push_back('\n');
+    file << output;
+    file.close();
 
 }
 
-Logger::Message::Message(std::string msg, Logger::LogLevel lvl): 
+
+Logger::Message::Message(const std::string& msg, Logger::LogLevel lvl):
 
     message_(msg), 
     level_(lvl) 
@@ -144,7 +140,7 @@ Logger::Message::Message(std::string msg, Logger::LogLevel lvl):
 {}
 
 
-void Logger::Message::setMsg(std::string msg){
+void Logger::Message::setMsg(const std::string &msg){
 
     message_ = msg;
 
@@ -156,13 +152,13 @@ void Logger::Message::setLevel(Logger::LogLevel lvl){
 
 }
 
-std::string Logger::Message::getMsg(){
+std::string Logger::Message::getMsg() const{
 
     return message_;
 
 }
 
-Logger::LogLevel Logger::Message::getLevel(){
+Logger::LogLevel Logger::Message::getLevel() const{
 
     return level_;
 
