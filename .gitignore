@@ -10,6 +10,8 @@ Server_game/x64
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+*.log
+
 
 # Compiled Object files
 *.slo

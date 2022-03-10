@@ -2,12 +2,17 @@
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <ctime>
+#include "Logger.h"
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(300, 300), "Server!");
     sf::CircleShape shape(100.f, 4);
     shape.setFillColor(sf::Color::Yellow);
+
+    Logger::getInstance().logging();
+
+    Logger::getInstance().info("info");
 
     shape.setPosition(100, 100);
     sf::UdpSocket socket;
@@ -26,6 +31,7 @@ int main()
     sf::IpAddress sender;
     unsigned short port;
     sf::Thread thread([&]() {
+        Logger::getInstance().debug("debug");
         while (true){
             if (socket.receive(data, 100, received, sender, port) != sf::Socket::Done)
             {
@@ -37,6 +43,7 @@ int main()
                 shape.setFillColor(sf::Color::Green);
 
             }
+        
         std::cout << "Received " << received << " bytes from " << sender << " on port " << port << std::endl;
 
         time_t clientTime;
@@ -63,5 +70,6 @@ int main()
         window.display();
     }
     thread.terminate();
+
     return 0;
 }
