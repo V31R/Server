@@ -63,19 +63,9 @@ void Logger::logging()
         while (true)
             {
                 if (!qMessage.empty()) {
-
-                    std::ofstream file(filename, std::fstream::out | std::fstream::app);
-                    std::string output;
                     Message temp = qMessage.front();
                     qMessage.pop();
-                    output.append(timestamp());
-                    output.append(" [");
-                    output.append(strLog.find(temp.getLevel())->second);
-                    output.append("] ");
-                    output.append(temp.getMsg());
-                    output.push_back('\n');
-                    file << output;
-                    file.close();
+                    log(temp.getMsg(), temp.getLevel());
 
                 }
             }
