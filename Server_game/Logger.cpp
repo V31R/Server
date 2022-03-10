@@ -16,41 +16,26 @@ Logger* Logger::instance{};
 Logger& Logger::getInstance() {
 
     static std::once_flag flag;
-    if (!instance)
+
+    if (!instance) {
+
         std::call_once(flag, []() { instance = new Logger(); });
+
+    }
+        
     return *instance;
 
 }
 
-Logger::LogLevel Logger::getLogLevelFromStr(std::string level){
-
-    std::string str;
-    std::transform(level.begin(), level.end(), std::back_inserter(str), toupper);
-
-    
-    for (auto level : strLog) {
-
-        if (str == level.second) {
-
-            return level.first;
-
-        }
-
-    }
-
-    throw str + "- This level of logging does not exist";
-
-}
-
-void Logger::log(std::string message, LogLevel level) {
+void Logger::log(Message msg) {
 
     std::ofstream file(filename, std::fstream::out | std::fstream::app);
     std::string output;
     output.append(timestamp());
     output.append(" [");
-    output.append(strLog.find(level)->second);
+    output.append(strLog.find(msg.getLevel())->second);
     output.append("] ");
-    output.append(message);
+    output.append(msg.getMsg());
     output.push_back('\n');
     file << output;
     file.close();
@@ -60,15 +45,21 @@ void Logger::log(std::string message, LogLevel level) {
 void Logger::logging()
 {
     std::thread t1([&]() {
-        while (true)
-            {
-                if (!qMessage.empty()) {
-                    Message temp = qMessage.front();
-                    qMessage.pop();
-                    log(temp.getMsg(), temp.getLevel());
 
-                }
+        while (true){
+
+            if (!messageQueue.empty()) {
+
+                Message temp = messageQueue.front();
+                mutex.lock();
+                messageQueue.pop();
+                mutex.unlock();
+                log(temp);
+
             }
+
+        }
+
     });
 
     t1.detach();
@@ -95,57 +86,47 @@ std::string Logger::timestamp() {
     
 }
 
+void Logger::pushMessage(std::string msg, Logger::LogLevel lvl){
+
+    mutex.lock();
+    messageQueue.push(Message(msg, lvl));
+    mutex.unlock();
+
+}
+
 void Logger::warn(std::string message) {
 
-    Message temp(message, LogLevel::WARN);
-    m.lock();
-    qMessage.push(temp);
-    m.unlock();
+    pushMessage(message, LogLevel::WARN);
 
 }
 
 void Logger::error(std::string message) {
 
-    Message temp(message, LogLevel::ERROR);
-    m.lock();
-    qMessage.push(temp);
-    m.unlock();
+    pushMessage(message, LogLevel::ERROR);
 
 }
 
 void Logger::info(std::string message) {
 
-    Message temp(message, LogLevel::INFO);
-    m.lock();
-    qMessage.push(temp);
-    m.unlock();
+    pushMessage(message, LogLevel::INFO);
 
 }
 
 void Logger::debug(std::string message) {
 
-    Message temp(message, LogLevel::DEBUG);
-    m.lock();
-    qMessage.push(temp);
-    m.unlock();
+    pushMessage(message, LogLevel::DEBUG);
 
 }
 
 void Logger::trace(std::string message) {
 
-    Message temp(message, LogLevel::TRACE);
-    m.lock();
-    qMessage.push(temp);
-    m.unlock();
+    pushMessage(message, LogLevel::TRACE);
 
 }
 
 void Logger::all(std::string message) {
 
-    Message temp(message, LogLevel::ALL);
-    m.lock();
-    qMessage.push(temp);
-    m.unlock();
+    pushMessage(message, LogLevel::ALL);
 
 }
 
@@ -155,29 +136,33 @@ void Logger::setLevel(LogLevel level){
 
 }
 
-void Logger::Message::setMsg(std::string msg)
-{
+Logger::Message::Message(std::string msg, Logger::LogLevel lvl): 
+
+    message_(msg), 
+    level_(lvl) 
+
+{}
+
+
+void Logger::Message::setMsg(std::string msg){
 
     message_ = msg;
 
 }
 
-void Logger::Message::setLevel(Logger::LogLevel lvl)
-{
+void Logger::Message::setLevel(Logger::LogLevel lvl){
 
     level_ = lvl;
 
 }
 
-std::string Logger::Message::getMsg()
-{
+std::string Logger::Message::getMsg(){
 
     return message_;
 
 }
 
-Logger::LogLevel Logger::Message::getLevel()
-{
+Logger::LogLevel Logger::Message::getLevel(){
 
     return level_;
 

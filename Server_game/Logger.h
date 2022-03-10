@@ -18,13 +18,11 @@
 class Logger {
 
 public: 
-
 	enum class LogLevel { WARN, ERROR, INFO, DEBUG, TRACE, ALL };
 	static Logger& getInstance();
-	static LogLevel getLogLevelFromStr(std::string str);
-	void log(std::string message, LogLevel level);
 	void logging();
 	std::string timestamp();
+	void pushMessage(std::string msg, Logger::LogLevel lvl);
 
 	void warn(std::string message);
 	void error(std::string message);
@@ -34,15 +32,17 @@ public:
 	void all(std::string message);
 
 	void setLevel(LogLevel level);
-	static std::map<LogLevel, std::string> strLog;
+	static std::map <LogLevel, std::string> strLog;
 	
 	class Message {
+
 	private:
 		std::string message_;
 		Logger::LogLevel level_;
 	public:
 		Message() {};
-		Message(std::string msg, Logger::LogLevel lvl) : message_(msg), level_(lvl) {};
+		Message(std::string msg, Logger::LogLevel lvl);
+
 		void setMsg(std::string msg);
 		void setLevel(Logger::LogLevel lvl);
 
@@ -52,13 +52,14 @@ public:
 	};
 
 private:
-	std::queue <Message> qMessage;
+	std::queue <Message> messageQueue;
 	Logger() {};
 	std::string filename = "Server_game.log";
     LogLevel level_;
 	static Logger* instance;
+	void log(Message msg);
 
 protected:
-	std::mutex m;
+	std::mutex mutex;
 };
 
