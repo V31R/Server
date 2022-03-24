@@ -33,6 +33,7 @@ int main()
     sf::Thread thread([&]() {
         Logger::getInstance().debug("debug");
         while (true){
+
             if (socket.receive(data, 100, received, sender, port) != sf::Socket::Done)
             {
                 // error...
