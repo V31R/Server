@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Network.hpp>
+#include "MessageHead.h"
 #include "Logger.h"
 #include <string>
 
@@ -7,7 +8,6 @@ class NetworkMessage{
 
 public:
 
-    enum class Type { LOGIN, TIME };
 
     NetworkMessage();
     NetworkMessage(const NetworkMessage & message);
@@ -15,13 +15,13 @@ public:
 
     ~NetworkMessage();
 
-    static NetworkMessage getMessageFromUDPSocket(sf::UdpSocket * socket, NetworkMessage::Type type);
+    static NetworkMessage getMessageFromUDPSocket(sf::UdpSocket & socket);
 
     void setCopyData(char* data);
     void getCopyData(char *& data);
     char* getData()const;
 
-    void getSizeFromType(NetworkMessage::Type type);
+    void getSizeFromType();
     size_t getSize()const;
 
     void setSenderIp(sf::IpAddress address);
@@ -30,15 +30,19 @@ public:
     void setPort(unsigned short port);
     unsigned short getPort()const;
 
+    void setHeader(Header header);
+    Header getHeader() const;
+
 private:
 
     void allocateMemory();
     void clearMemory();
-
+    Header header;
     char * data;
     size_t size;
     sf::IpAddress sender;
     unsigned short port;
+    
 
 };
 

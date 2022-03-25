@@ -23,6 +23,8 @@ NetworkMessage::NetworkMessage(const NetworkMessage& message):
 NetworkMessage& NetworkMessage::operator=(const NetworkMessage& message){
 
 	sender = message.getSenderIP();
+	header = message.getHeader();
+	port = message.getPort();
 
 	if (data) {
 
@@ -60,23 +62,29 @@ NetworkMessage::~NetworkMessage(){
 
 }
 
-NetworkMessage NetworkMessage::getMessageFromUDPSocket(sf::UdpSocket * socket, NetworkMessage::Type type){
+NetworkMessage NetworkMessage::getMessageFromUDPSocket(sf::UdpSocket & socket){
 
 
 	NetworkMessage result;
-	result.getSizeFromType(type);
-	result.allocateMemory();
+	MessageHead messageHead;
 
 	sf::IpAddress address;
 	std::size_t received;
 	unsigned short port;
-	if (auto res{ socket->receive(result.getData(), result.getSize(), received, address, port) }; res != sf::Socket::Status::Done) {
+
+	if (auto res{ socket.receive(reinterpret_cast<void*>( & messageHead), sizeof(messageHead), received, address, port)}; res != sf::Socket::Status::Done) {
 
 		char message[50];
 		sprintf_s(message, "Message from UDP socket don't recieved. Error: %d.", res);
 		throw std::logic_error(message);
 
 	}
+	int t = sizeof(Header);
+	result.setHeader(*reinterpret_cast<Header*>(&messageHead));
+
+	result.getSizeFromType();
+	result.allocateMemory();
+	result.setCopyData(messageHead.getData());
 
 	result.setSenderIp(address);
 	result.setPort(port);
@@ -103,17 +111,17 @@ char* NetworkMessage::getData() const {
 
 }
 
-void NetworkMessage::getSizeFromType(NetworkMessage::Type type){
+void NetworkMessage::getSizeFromType(){
 
-	switch (type) {
+	switch (header.getType()) {
 
-	case Type::LOGIN : {
+	case Header::Type::LOGIN : {
 
 		size = 0;
 		break;
 
 	}
-	case Type::TIME: {
+	case Header::Type::TIME: {
 
 		size = 25;
 
@@ -158,6 +166,15 @@ unsigned short NetworkMessage::getPort() const {
 
 	return port;
 
+}
+
+void NetworkMessage::setHeader(Header header)
+{
+}
+
+Header NetworkMessage::getHeader() const
+{
+	return Header();
 }
 
 void NetworkMessage::allocateMemory(){

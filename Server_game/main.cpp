@@ -30,39 +30,40 @@ int main()
     //char data[100];
     //std::size_t received;
     //sf::IpAddress sender;
-    unsigned short port{ 9993U };
+    //unsigned short port{ 9993U };
     sf::Thread thread([&]() {
-        Logger::getInstance().debug("debug");
+        
         while (true){
 
             NetworkMessage message{};
-
+            char buffer[256];
             try {
 
-                message = NetworkMessage::getMessageFromUDPSocket(&socket, NetworkMessage::Type::TIME);
+                message = NetworkMessage::getMessageFromUDPSocket(socket);
                 shape.setFillColor(sf::Color::Green);
-
+                
+                sprintf_s(buffer, "Recived messages from %s on port %lld", message.getSenderIP().toString().c_str(), message.getPort());
+                Logger::getInstance().debug(buffer);
             }
             catch (std::exception& exception) {
 
                 Logger::getInstance().error(exception.what());
+                sprintf_s(buffer, "%s", exception.what());
                 shape.setFillColor(sf::Color::Red);
 
             }
 
-            shape.setFillColor(sf::Color::Green);
 
+        std::cout << buffer << std::endl;
 
-        std::cout << "Received " << message.getSize() << " bytes from " << message.getSenderIP() << " on port " << message.getPort() << std::endl;
+        time_t clientTime{message.getHeader().getTime()};
+        //if (message.getData()) {
+            //sscanf_s(message.getData(), "%lld", &clientTime);
 
-        time_t clientTime;
-        if (message.getData()) {
-            sscanf_s(message.getData(), "%lld", &clientTime);
-
-            time_t serverTIme;
-            time(&serverTIme);
-            printf("Send: %lld Recieve: %lld Time: %lld\n", clientTime, serverTIme, serverTIme - clientTime);
-        }
+        time_t serverTIme;
+        time(&serverTIme);
+        printf("Send: %lld Recieve: %lld Time: %lld\n", clientTime, serverTIme, serverTIme - clientTime);
+        //}
 
         }
         });
