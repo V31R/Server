@@ -22,6 +22,7 @@ NetworkMessage::NetworkMessage(const NetworkMessage& message):
 
 NetworkMessage& NetworkMessage::operator=(const NetworkMessage& message){
 
+	sender = message.getSenderIP();
 
 	if (data) {
 
@@ -39,55 +40,134 @@ NetworkMessage& NetworkMessage::operator=(const NetworkMessage& message){
 		}
 
 	}
+	else {
+
+		size = message.getSize();
+		allocateMemory();
+
+	}
 
 	setCopyData(message.getData());
 
+	return *this;
+
 }
 
-NetworkMessage::~NetworkMessage()
-{
+NetworkMessage::~NetworkMessage(){
+
+	memset(data, 0, size);
+	clearMemory();
+
 }
 
-NetworkMessage NetworkMessage::getMessageFromUDPSocket(sf::UdpSocket& socket, unsigned short port, NetworkMessage::Type type)
-{
-	return NetworkMessage();
+NetworkMessage NetworkMessage::getMessageFromUDPSocket(sf::UdpSocket * socket, NetworkMessage::Type type){
+
+
+	NetworkMessage result;
+	result.getSizeFromType(type);
+	result.allocateMemory();
+
+	sf::IpAddress address;
+	std::size_t received;
+	unsigned short port;
+	if (auto res{ socket->receive(result.getData(), result.getSize(), received, address, port) }; res != sf::Socket::Status::Done) {
+
+		char message[50];
+		sprintf_s(message, "Message from UDP socket don't recieved. Error: %d.", res);
+		throw std::logic_error(message);
+
+	}
+
+	result.setSenderIp(address);
+	result.setPort(port);
+
+	return result;
+
 }
 
-void NetworkMessage::setCopyData(char* data)
-{
+void NetworkMessage::setCopyData(char* data){
+
+	memcpy(this->data, data, size);
+
 }
 
-void NetworkMessage::getCopyData(char*& data)
-{
+void NetworkMessage::getCopyData(char*& data){
+
+	memcpy(data, this->data, size);
+
 }
 
-char* NetworkMessage::getData() const
-{
-	return nullptr;
+char* NetworkMessage::getData() const {
+
+	return data;
+
 }
 
-void NetworkMessage::getSizeFromType(NetworkMessage::Type type)
-{
+void NetworkMessage::getSizeFromType(NetworkMessage::Type type){
+
+	switch (type) {
+
+	case Type::LOGIN : {
+
+		size = 0;
+		break;
+
+	}
+	case Type::TIME: {
+
+		size = 25;
+
+		break;
+
+	}
+	default: {
+
+		size = 0;
+
+	}
+
+	}
+
 }
 
-size_t NetworkMessage::getSize() const
-{
-	return size_t();
+size_t NetworkMessage::getSize() const {
+
+	return size;
+
 }
 
-void NetworkMessage::setSenderIp(sf::IpAddress address)
-{
+void NetworkMessage::setSenderIp(sf::IpAddress address){
+
+	sender = address;
+
 }
 
-sf::IpAddress NetworkMessage::getSenderIP() const
-{
-	return sf::IpAddress();
+sf::IpAddress NetworkMessage::getSenderIP() const {
+
+	return sender;
+
 }
 
-void NetworkMessage::allocateMemory()
-{
+void NetworkMessage::setPort(unsigned short port){
+
+	this->port = port;
+
 }
 
-void NetworkMessage::clearMemory()
-{
+unsigned short NetworkMessage::getPort() const {
+
+	return port;
+
+}
+
+void NetworkMessage::allocateMemory(){
+
+	data = new char[size];
+
+}
+
+void NetworkMessage::clearMemory(){
+
+	delete[] data;
+
 }

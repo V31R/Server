@@ -1,12 +1,13 @@
 #pragma once
 #include <SFML/Network.hpp>
-
+#include "Logger.h"
+#include <string>
 
 class NetworkMessage{
 
 public:
 
-    enum class Type { LOGIN };
+    enum class Type { LOGIN, TIME };
 
     NetworkMessage();
     NetworkMessage(const NetworkMessage & message);
@@ -14,7 +15,7 @@ public:
 
     ~NetworkMessage();
 
-    static NetworkMessage getMessageFromUDPSocket(sf::UdpSocket& socket, unsigned short port,NetworkMessage::Type type);
+    static NetworkMessage getMessageFromUDPSocket(sf::UdpSocket * socket, NetworkMessage::Type type);
 
     void setCopyData(char* data);
     void getCopyData(char *& data);
@@ -26,6 +27,9 @@ public:
     void setSenderIp(sf::IpAddress address);
     sf::IpAddress getSenderIP()const;
 
+    void setPort(unsigned short port);
+    unsigned short getPort()const;
+
 private:
 
     void allocateMemory();
@@ -34,7 +38,7 @@ private:
     char * data;
     size_t size;
     sf::IpAddress sender;
-    
+    unsigned short port;
 
 };
 
