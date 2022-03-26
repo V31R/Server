@@ -42,7 +42,7 @@ int main()
                 message = NetworkMessage::getMessageFromUDPSocket(socket);
                 shape.setFillColor(sf::Color::Green);
                 
-                sprintf_s(buffer, "Recived messages from %s on port %lld", message.getSenderIP().toString().c_str(), message.getPort());
+                sprintf_s(buffer, "Recived messages from %s on port %d", message.getSenderIP().toString().c_str(), message.getPort());
                 Logger::getInstance().debug(buffer);
             }
             catch (std::exception& exception) {
