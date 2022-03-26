@@ -24,13 +24,13 @@ public:
     void getSizeFromType();
     size_t getSize()const;
 
-    void setSenderIp(sf::IpAddress address);
+    void setSenderIp(const sf::IpAddress & address);
     sf::IpAddress getSenderIP()const;
 
     void setPort(unsigned short port);
     unsigned short getPort()const;
 
-    void setHeader(Header header);
+    void setHeader(const Header & header);
     Header getHeader() const;
 
 private:

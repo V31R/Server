@@ -82,7 +82,7 @@ NetworkMessage NetworkMessage::getMessageFromUDPSocket(sf::UdpSocket & socket){
 
 	}
 	int t = sizeof(Header);
-	result.setHeader(*reinterpret_cast<Header*>(&messageHead));
+	result.setHeader(messageHead);
 
 	result.getSizeFromType();
 	result.allocateMemory();
@@ -146,7 +146,7 @@ size_t NetworkMessage::getSize() const {
 
 }
 
-void NetworkMessage::setSenderIp(sf::IpAddress address){
+void NetworkMessage::setSenderIp(const sf::IpAddress & address){
 
 	sender = address;
 
@@ -170,13 +170,16 @@ unsigned short NetworkMessage::getPort() const {
 
 }
 
-void NetworkMessage::setHeader(Header header)
-{
+void NetworkMessage::setHeader(const Header & header){
+
+	this->header = header;
+
 }
 
-Header NetworkMessage::getHeader() const
-{
-	return Header();
+Header NetworkMessage::getHeader() const{
+
+	return header;
+
 }
 
 void NetworkMessage::allocateMemory(){
