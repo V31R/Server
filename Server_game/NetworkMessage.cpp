@@ -11,7 +11,9 @@ NetworkMessage::NetworkMessage(const NetworkMessage& message):
 
 	data{ nullptr },
 	size{ message.getSize() },
-	sender{ message.getSenderIP() }
+	sender{ message.getSenderIP() },
+	header{ message.getHeader() },
+	port{ message .getPort() }
 
 {
 
