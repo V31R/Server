@@ -1,12 +1,21 @@
 #pragma once
 #include <mutex>
+#include <queue>
+#include <thread>
+#include <string>
+#include "NetworkMessage.h"
+#include "Logger.h"
 
 class MessageReciever{
 public:
 
 	static MessageReciever& getInstance();
 
-	void getMessages();
+	void receiving(sf::UdpSocket& socket);
+
+	NetworkMessage getMessage();
+
+	std::string getMessageForLog();
 
 private:
 
@@ -16,5 +25,8 @@ private:
 
 	static MessageReciever * instance;
 
+	std::queue <NetworkMessage> messageQueue;
+
+	std::mutex mutex;
 };
 

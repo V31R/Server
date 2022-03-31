@@ -4,6 +4,7 @@
 #include <ctime>
 #include "Logger.h"
 #include "NetworkMessage.h"
+#include "MessageReciever.h"
 
 int main()
 {
@@ -23,6 +24,9 @@ int main()
         // error...
         shape.setFillColor(sf::Color::Red);
     }
+
+    MessageReciever::getInstance().receiving(socket);
+
     window.clear();
     window.draw(shape);
     window.display();
