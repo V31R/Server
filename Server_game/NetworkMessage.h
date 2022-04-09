@@ -15,8 +15,6 @@ public:
 
     ~NetworkMessage();
 
-    static NetworkMessage getMessageFromUDPSocket(sf::UdpSocket & socket);
-
     void setCopyData(char* data);
     void getCopyData(char *& data);
     char* getData()const;
@@ -32,6 +30,8 @@ public:
 
     void setHeader(const Header & header);
     Header getHeader() const;
+
+    void setData(char* data);
 
 private:
 

@@ -4,6 +4,7 @@
 #include <thread>
 #include <string>
 #include "NetworkMessage.h"
+#include "RecievingMsgFromSockets.h"
 #include "Logger.h"
 
 class MessageReciever{
@@ -14,8 +15,6 @@ public:
 	void receiving(sf::UdpSocket& socket);
 
 	NetworkMessage getMessage();
-
-	std::string getMessageForLog();
 
 private:
 
@@ -28,5 +27,7 @@ private:
 	std::queue <NetworkMessage> messageQueue;
 
 	std::mutex mutex;
+	
+	std::string getMessageForLog();
 };
 

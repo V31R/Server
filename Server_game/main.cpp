@@ -5,6 +5,7 @@
 #include "Logger.h"
 #include "NetworkMessage.h"
 #include "MessageReciever.h"
+#include "RecievingMsgFromSockets.h"
 
 int main()
 {
@@ -43,7 +44,7 @@ int main()
             char buffer[256];
             try {
 
-                message = NetworkMessage::getMessageFromUDPSocket(socket);
+                message = RecievingMsgFromSockets::getMessageFromUDPSocket(socket);
                 shape.setFillColor(sf::Color::Green);
                 
                 sprintf_s(buffer, "Recived messages from %s on port %d", message.getSenderIP().toString().c_str(), message.getPort());

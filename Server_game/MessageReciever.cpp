@@ -27,7 +27,7 @@ void MessageReciever::receiving(sf::UdpSocket& socket){
         while (true) {
 
             mutex.lock();
-            messageQueue.push(NetworkMessage::getMessageFromUDPSocket(socket));
+            messageQueue.push(RecievingMsgFromSockets::getMessageFromUDPSocket(socket));
             Logger::getInstance().info(getMessageForLog());
             mutex.unlock();
 
