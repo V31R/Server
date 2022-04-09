@@ -20,13 +20,32 @@ int main()
     shape.setPosition(100, 100);
     sf::UdpSocket socket;
 
-    if (socket.bind(9993) != sf::Socket::Done)
+    /*if (socket.bind(9993) != sf::Socket::Done)
     {
         // error...
         shape.setFillColor(sf::Color::Red);
-    }
+    }*/
 
-    MessageReciever::getInstance().receiving(socket);
+    sf::TcpListener listener;
+    listener.listen(5000,"127.0.0.1");
+
+    sf::TcpSocket socketTCP;
+        if (listener.accept(socketTCP) == sf::Socket::Done)
+        {
+            // A new client just connected!
+            std::cout << "New connection received from " << socketTCP.getRemoteAddress() << std::endl;
+        
+        }
+
+    
+    char buffer[1024];
+    std::size_t received = 0;
+    socketTCP.receive(buffer, sizeof(buffer), received);
+    std::cout << "The client said: " << buffer << std::endl;
+
+    std::string msg = "Welcome, client";
+    socketTCP.send(msg.c_str(), msg.size() + 1);
+    //MessageReciever::getInstance().receiving(socket);
 
     window.clear();
     window.draw(shape);
@@ -44,7 +63,10 @@ int main()
             char buffer[256];
             try {
 
-                message = RecievingMsgFromSockets::getMessageFromUDPSocket(socket);
+                message = RecievingMsgFromSockets::getMessageFromTCPSocket(socketTCP);
+                // Send an answer
+                
+
                 shape.setFillColor(sf::Color::Green);
                 
                 sprintf_s(buffer, "Recived messages from %s on port %d", message.getSenderIP().toString().c_str(), message.getPort());
