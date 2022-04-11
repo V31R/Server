@@ -3,6 +3,9 @@
 #include <iostream>
 #include <ctime>
 #include "Logger.h"
+#include "NetworkMessage.h"
+#include "MessageReciever.h"
+#include "RecievingMsgFromSockets.h"
 
 int main()
 {
@@ -17,41 +20,77 @@ int main()
     shape.setPosition(100, 100);
     sf::UdpSocket socket;
 
-    if (socket.bind(9993) != sf::Socket::Done)
+    /*if (socket.bind(9993) != sf::Socket::Done)
     {
         // error...
         shape.setFillColor(sf::Color::Red);
-    }
+    }*/
+
+    sf::TcpListener listener;
+    listener.listen(5000,"127.0.0.1");
+
+    sf::TcpSocket socketTCP;
+        if (listener.accept(socketTCP) == sf::Socket::Done)
+        {
+            // A new client just connected!
+            std::cout << "New connection received from " << socketTCP.getRemoteAddress() << std::endl;
+        
+        }
+
+    
+    char buffer[1024];
+    std::size_t received = 0;
+    socketTCP.receive(buffer, sizeof(buffer), received);
+    std::cout << "The client said: " << buffer << std::endl;
+
+    std::string msg = "Welcome, client";
+    socketTCP.send(msg.c_str(), msg.size() + 1);
+    //MessageReciever::getInstance().receiving(socket);
+
     window.clear();
     window.draw(shape);
     window.display();
 
-    char data[100];
-    std::size_t received;
-    sf::IpAddress sender;
-    unsigned short port;
+    //char data[100];
+    //std::size_t received;
+    //sf::IpAddress sender;
+    //unsigned short port{ 9993U };
     sf::Thread thread([&]() {
-        Logger::getInstance().debug("debug");
+        
         while (true){
-            if (socket.receive(data, 100, received, sender, port) != sf::Socket::Done)
-            {
-                // error...
-                shape.setFillColor(sf::Color::Red);
-            }
-            else {
+
+            NetworkMessage message{};
+            char buffer[256];
+            try {
+
+                message = RecievingMsgFromSockets::getMessageFromTCPSocket(socketTCP);
+                // Send an answer
+                
 
                 shape.setFillColor(sf::Color::Green);
+                
+                sprintf_s(buffer, "Recived messages from %s on port %d", message.getSenderIP().toString().c_str(), message.getPort());
+                Logger::getInstance().debug(buffer);
+            }
+            catch (std::exception& exception) {
+
+                Logger::getInstance().error(exception.what());
+                sprintf_s(buffer, "%s", exception.what());
+                shape.setFillColor(sf::Color::Red);
 
             }
-        
-        std::cout << "Received " << received << " bytes from " << sender << " on port " << port << std::endl;
 
-        time_t clientTime;
-        sscanf_s(data, "%lld", &clientTime);
+
+        std::cout << buffer << std::endl;
+
+        time_t clientTime{message.getHeader().getTime()};
+        //if (message.getData()) {
+            //sscanf_s(message.getData(), "%lld", &clientTime);
 
         time_t serverTIme;
         time(&serverTIme);
-        printf("Send: %lld Recieve: %lld Time: %lld\n",clientTime,serverTIme,serverTIme-clientTime);
+        printf("Send: %lld Recieve: %lld Time: %lld\n", clientTime, serverTIme, serverTIme - clientTime);
+        //}
 
         }
         });
